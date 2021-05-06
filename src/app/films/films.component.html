@@ -1,0 +1,216 @@
+
+
+<style>
+    :host {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      font-size: 14px;
+      color: #333;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 8px 0;
+    }
+
+    .input {
+        margin-right: 2em;
+    }
+
+    .tow-hours {
+        color: blue;
+        font-size : 24px;
+    }
+
+    .other-than-tow-howrs {
+        color: red;
+        font-size : 30px;
+    }
+  
+    p {
+      margin: 0;
+    }
+  
+    .spacer {
+      flex: 1;
+    }
+  
+    .toolbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      background-color: #1976d2;
+      color: white;
+      font-weight: 600;
+    }
+  
+    .toolbar img {
+      margin: 0 16px;
+    }
+  
+    .toolbar #twitter-logo {
+      height: 40px;
+      margin: 0 16px;
+    }
+  
+    .toolbar #twitter-logo:hover {
+      opacity: 0.8;
+    }
+  
+    .content {
+      display: flex;
+      margin: 82px 32px 32px 32px;
+      flex-direction: column;
+      
+    }
+    svg#clouds {
+      position: fixed;
+      bottom: -160px;
+      left: -230px;
+      z-index: -10;
+      width: 1920px;
+    }
+
+    .list{
+        float: left;
+    }
+
+  </style>
+  
+  <!-- Toolbar -->
+  <div class="toolbar" role="banner">
+    <img
+      width="40"
+      alt="movies"
+      src="https://img.icons8.com/cotton/2x/movie-beginning.png"
+    />
+    <span>Welcome</span>
+      <div class="spacer"></div>
+  </div>
+  
+  <div class="content" role="main">
+  
+   
+        <div>
+            <!-- Style avec  style.color et  style.font-size.px-->
+            <mat-list class="list">
+                <mat-list-item *ngFor="let film of listFilmAffiches">
+                <div [hidden]="film.duree>5">
+                  <div mat-line
+                  [style.font-size.px]="film.duree==2 ? 24 : 30"
+                  [style.color]="film.duree==2 ? 'blue' : 'red'">
+                  {{film.nom}}</div>
+                  <div mat-line> Durée: {{film.duree}} heures </div>
+                  <div mat-line> Catégorie: {{film.categorie}} </div>
+                </div>
+                </mat-list-item>
+              </mat-list>
+
+        <!-- Style avec NgStyle -->
+            <mat-list class="list">
+                <mat-list-item *ngFor="let film of listFilmAffiches">
+                <div [hidden]="film.duree>5">
+                  <div mat-line
+                  [ngStyle]="film.duree==2?
+                  {
+                      'color': 'blue',
+                      'font-size.px' : 24
+                    } : 
+                    {
+                        'color': 'red',
+                        'font-size.px' : 30
+                }"
+                  >{{film.nom}}</div>
+                  <div mat-line> Durée: {{film.duree}} heures </div>
+                  <div mat-line> Catégorie: {{film.categorie}} </div>
+                </div>
+                </mat-list-item>
+              </mat-list>
+
+        <!-- Style avec NgClass -->
+            <mat-list>
+                <mat-list-item *ngFor="let film of listFilmAffiches">
+                <div [hidden]="film.duree>5">
+                  <div mat-line
+                  [ngClass]="film.duree==2? 'tow-hours' :  'other-than-tow-howrs'">{{film.nom}}</div>
+                  <div mat-line> Durée: {{film.duree}} heures </div>
+                  <div mat-line> Catégorie: {{film.categorie}} </div>
+                </div>
+                </mat-list-item>
+              </mat-list>
+
+        </div>
+            
+  
+      
+      
+      
+      
+      <mat-grid-list cols="4" rowHeight="100px">
+        <mat-grid-tile colspan="1">
+            <button mat-raised-button color="primary" (click)="calculerNbrAction()"
+            [disabled]="calculeDisabled">
+                <mat-icon>calculate</mat-icon>
+                <b>Calculer</b>
+              </button>
+        </mat-grid-tile>
+        <mat-grid-tile colspan="3" *ngIf="showText">
+            <h1>Le nombre de films de catégorie action est : {{nbrAction}} sur total {{listFilms.length}} films</h1>
+      </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field >
+        <mat-label>le nombre total des films a affichés </mat-label>
+        <input matInput type="number" placeholder="le nombre total des films a affichés" 
+        [(ngModel)]="nbrFilms"
+        (keyup)="changerNbrFilms()">
+      </mat-form-field>
+
+  
+          <h3>Ajouter un film: </h3> 
+          <h4 *ngIf="succ" style="color: forestgreen;">Film ajouté!</h4>
+          <h4 *ngIf="err" style="color: red;">Il faut remplir tous les champs!</h4>
+
+          <form >
+            <mat-form-field class="input">
+              <mat-label>Nom</mat-label>
+              <input matInput required placeholder="Nom" [(ngModel)]="film.nom" name="nom">
+            </mat-form-field>
+
+            <mat-form-field class="input">
+              <mat-label>Catégorie</mat-label>
+              <input matInput required placeholder="Catégorie" [(ngModel)]="film.categorie" name="categorie">
+            </mat-form-field>
+
+            <mat-form-field class="input">
+                <mat-label>Durée</mat-label>
+                <input matInput required type="number" placeholder="Durée" [(ngModel)]="film.duree" name="duree">
+              </mat-form-field>
+
+            <button mat-stroked-button color="warn" (click)="ajouterFilm()">
+                <mat-icon>add</mat-icon>
+                <b>Ajouter</b>
+              </button>
+          </form>
+ 
+   
+  
+    <svg id="clouds" alt="Gray Clouds Background" xmlns="http://www.w3.org/2000/svg" width="2611.084" height="485.677" viewBox="0 0 2611.084 485.677">
+      <path id="Path_39" data-name="Path 39" d="M2379.709,863.793c10-93-77-171-168-149-52-114-225-105-264,15-75,3-140,59-152,133-30,2.83-66.725,9.829-93.5,26.25-26.771-16.421-63.5-23.42-93.5-26.25-12-74-77-130-152-133-39-120-212-129-264-15-54.084-13.075-106.753,9.173-138.488,48.9-31.734-39.726-84.4-61.974-138.487-48.9-52-114-225-105-264,15a162.027,162.027,0,0,0-103.147,43.044c-30.633-45.365-87.1-72.091-145.206-58.044-52-114-225-105-264,15-75,3-140,59-152,133-53,5-127,23-130,83-2,42,35,72,70,86,49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33,61.112,8.015,113.854-5.72,150.492-29.764a165.62,165.62,0,0,0,110.861-3.236c47,94,178,113,251,33,31.385,4.116,60.563,2.495,86.487-3.311,25.924,5.806,55.1,7.427,86.488,3.311,73,80,204,61,251-33a165.625,165.625,0,0,0,120,0c51,13,108,15,157-5a147.188,147.188,0,0,0,33.5-18.694,147.217,147.217,0,0,0,33.5,18.694c49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33C2446.709,1093.793,2554.709,922.793,2379.709,863.793Z" transform="translate(142.69 -634.312)" fill="#eee"/>
+    </svg>
+  
+  </div>
+  
+
+  
+  
+  <router-outlet></router-outlet>
